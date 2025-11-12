@@ -19,9 +19,9 @@ class TextNode():
 
     def __eq__(self, other):
         if (
-            self.TextNode.text == other.TextNode.text and 
-            self.TextNode.text_type == other.TextNode.text_type and
-            self.TextNode.url == other.TextNode.url
+            self.text == other.text and 
+            self.text_type == other.text_type and
+            self.url == other.url
         ):
             return True
         return False
