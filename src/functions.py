@@ -1,5 +1,7 @@
 import re
-from textnode import TextNode, TextType
+from textnode import TextNode, TextType, text_node_to_html_node
+from htmlnode import LeafNode, ParentNode
+from block_types import block_to_block_type
 
 def extract_markdown_images(text):
     return re.findall(r"!\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
@@ -94,3 +96,99 @@ def markdown_to_blocks(markdown):
             continue
         stripped_blocks.append(block.strip()) 
     return stripped_blocks
+
+def markdown_to_html_node(markdown):
+    markdown_blocks = markdown_to_blocks(markdown)
+    block_children = []
+    for block in markdown_blocks:
+        block_type = block_to_block_type(block)
+        
+        #if paragraph
+        if block_type == BlockType.PARAGRAPH:
+            lines = block.split("\n")
+            paragraph_text = " ".join(lines)
+            children = text_to_children(paragraph_text)
+
+            node = ParentNode("p", children)
+            block_children.append(node)
+        
+        #if Unordered List
+        elif block_type == BlockType.UNORDERED_LIST:
+            split_list_from_block = block.split("\n")
+            list_item_nodes = []
+            for line in split_list_from_block:
+                new_line = line.strip("- ")
+                children = text_to_children(new_line)
+                li_parent_node = ParentNode("li", children)
+                list_item_nodes.append(li_parent_node)
+            node = ParentNode("ul", list_item_nodes)
+            block_children.append(node)
+
+        #if Ordered List
+        elif block_type == BlockType.ORDERED_LIST:
+            split_list_from_block = block.split("\n")
+            list_item_nodes = []
+            for line in split_list_from_block:
+                dot_index = line.find(". ")
+                if dot_index == -1:
+                    new_line = line
+                else:
+                    new_line = line[dot_index + 2 :]
+                children = text_to_children(new_line)
+                li_parent_node = ParentNode("li", children)
+                list_item_nodes.append(li_parent_node)
+            
+            
+            node = ParentNode("ol", list_item_nodes)
+            block_children.append(node)
+
+        #if Code
+        elif block_type == BlockType.CODE:
+            lines = block.split("\n")
+            inner_lines = lines[1:-1]
+            code_text = "\n".join(inner_lines)
+
+            text_node = TextNode(code_text, TextType.TEXT)
+            code_child = text_node_to_html_node(text_node)
+
+            code_parent_node = ParentNode("code", [code_child])
+            node = ParentNode("pre", [code_parent_node])
+            block_children.append(node)
+
+        #if Heading
+        elif block_type == BlockType.HEADING:
+            pound_count = 0
+            for c in block:
+                if c == '#':
+                    pound_count += 1
+                else:
+                    break
+            heading_text = block[pound_count + 1 :]
+            children = text_to_children(heading_text)
+            node = ParentNode(f"h{pound_count}", children)
+            block_children.append(node)
+
+        
+        #if Quote
+        elif block_type == BlockType.QUOTE:
+            split_list_from_block = block.split("\n")
+            new_lines = []
+            for line in split_list_from_block:
+                cleaned = line.lstrip(">").strip()
+                new_lines.append(cleaned)
+                
+            content = " ".join(new_lines)
+            children = text_to_children(content)
+            node = ParentNode("blockquote", children)
+            block_children.append(node)
+
+    return ParentNode("div", block_children)
+
+
+def text_to_children(text):
+    text_nodes = text_to_textnodes(text)
+    children = []
+    for tn in text_nodes:
+        child = text_node_to_html_node(tn)
+        children.append(child)
+    return children
