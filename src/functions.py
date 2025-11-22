@@ -184,7 +184,6 @@ def markdown_to_html_node(markdown):
 
     return ParentNode("div", block_children)
 
-
 def text_to_children(text):
     text_nodes = text_to_textnodes(text)
     children = []
@@ -192,3 +191,10 @@ def text_to_children(text):
         child = text_node_to_html_node(tn)
         children.append(child)
     return children
+
+def extract_title(markdown):
+    blocks = markdown_to_blocks(markdown)
+    for block in blocks:
+        if block.startswith("# "):
+            return block.strip("#").strip()
+    raise Exception("No header in markdown")
