@@ -1,7 +1,8 @@
 import re
+import os
 from textnode import TextNode, TextType, text_node_to_html_node
 from htmlnode import LeafNode, ParentNode
-from block_types import block_to_block_type
+from block_types import block_to_block_type, BlockType
 
 def extract_markdown_images(text):
     return re.findall(r"!\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
@@ -201,8 +202,10 @@ def extract_title(markdown):
 
 def generate_page(from_path, template_path, dest_path):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}.")
-    markdown_contents = from_path.read()
-    template_contents = template_path.read()
+    with open(from_path, "r") as f:
+        markdown_contents = f.read()
+    with open(template_path, "r") as f:
+        template_contents = f.read()
 
     html_node = markdown_to_html_node(markdown_contents)
     html_string = html_node.to_html()
@@ -212,7 +215,9 @@ def generate_page(from_path, template_path, dest_path):
     updated_template_title = template_contents.replace("{{ Title }}", title)
     full_html_page = updated_template_title.replace("{{ Content }}", html_string)
 
-    os.path.mkdirs(dest_path, exist_ok=True)
+    dest_dir = os.path.dirname(dest_path)
+    if dest_dir != "":    
+        os.makedirs(dest_dir, exist_ok=True)
     with open(dest_path, "w") as f:
         f.write(full_html_page)
 
