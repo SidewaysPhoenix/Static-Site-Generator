@@ -198,3 +198,21 @@ def extract_title(markdown):
         if block.startswith("# "):
             return block.strip("#").strip()
     raise Exception("No header in markdown")
+
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}.")
+    markdown_contents = from_path.read()
+    template_contents = template_path.read()
+
+    html_node = markdown_to_html_node(markdown_contents)
+    html_string = html_node.to_html()
+
+    title = extract_title(markdown_contents)
+
+    updated_template_title = template_contents.replace("{{ Title }}", title)
+    full_html_page = updated_template_title.replace("{{ Content }}", html_string)
+
+    os.path.mkdirs(dest_path, exist_ok=True)
+    with open(dest_path, "w") as f:
+        f.write(full_html_page)
+

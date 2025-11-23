@@ -1,5 +1,5 @@
 from textnode import TextNode, TextType
-from functions import text_to_textnodes
+from functions import text_to_textnodes, generate_page
 import os
 import shutil
 
@@ -25,11 +25,13 @@ def copy_static(source_directory, destination_directory):
 def main():
     source_directory = "./static"
     destination_directory = "./public"
+    template_path = "./template.html"
     
     if os.path.isdir(destination_directory):
         shutil.rmtree(destination_directory)
     os.mkdir(destination_directory)
 
+    generate_page(source_directory, template_path, destination_directory)
     copy_static(source_directory, destination_directory)
 
 if __name__ == "__main__":
