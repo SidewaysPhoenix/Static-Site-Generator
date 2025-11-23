@@ -26,15 +26,20 @@ def main():
     source_directory = "./static"
     destination_directory = "./public"
     template_path = "./template.html"
-    content_path = "./content/index.md"
-    dest_path = "./public/index.html"
+    content_path = "./content"
+    
     
     if os.path.isdir(destination_directory):
         shutil.rmtree(destination_directory)
     os.mkdir(destination_directory)
 
-    generate_page(content_path, template_path, dest_path)
+    
     copy_static(source_directory, destination_directory)
+    generate_page(
+        os.path.join(content_path, "index.md"),
+        template_path,
+        os.path.join(destination_directory, "index.html"),
+    )
 
 if __name__ == "__main__":
     main()
