@@ -1,13 +1,14 @@
 import os
 import shutil
 
+from pathlib import Path
 from copystatic import copy_static
-from gencontent import generate_page
+from gencontent import generate_page, generate_pages_recursive
 
 source_directory = "./static"
-destination_directory = "./public"
+destination_directory = Path("./public")
 template_path = "./template.html"
-content_path = "./content"
+content_path = Path("./content")
 
 def main():
 
@@ -20,10 +21,17 @@ def main():
     copy_static(source_directory, destination_directory)
     
     print("Generating page...")
-    generate_page(
-        os.path.join(content_path, "index.md"),
+    
+    #    Old Code
+    #generate_page(
+    #    os.path.join(content_path, "index.md"),
+    #    template_path,
+    #    os.path.join(destination_directory, "index.html"),
+    #)
+    generate_pages_recursive(
+        content_path,
         template_path,
-        os.path.join(destination_directory, "index.html"),
+        destination_directory,
     )
 
 
@@ -31,6 +39,3 @@ main()
 
 
 
-#list directories,files in source
-#if files are in source directory copy them, if they do not exist in destination_directory yet
-#then if first directory in source does not exist make it and then set as current source to go into, otherwise skip and go to next directory to do the same
