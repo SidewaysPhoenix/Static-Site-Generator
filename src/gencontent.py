@@ -59,7 +59,7 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, bas
                 title_updated_template = template_contents.replace("{{ Title }}", title)
                 content_updated_template = title_updated_template.replace("{{ Content }}", html_string)
                 href_updated_template = content_updated_template.replace('href="/', f'href="{basepath}')
-                full_html_page = href_updated_template.replace('src="/', f'href="{basepath}')
+                full_html_page = href_updated_template.replace('src="/', f'src="{basepath}')
             
                 if dest_dir_path != "":    
                     os.makedirs(dest_dir_path, exist_ok=True)
