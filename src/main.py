@@ -31,10 +31,10 @@ def main():
     #    os.path.join(destination_directory, "index.html"),
     #    basepath,
     #)
-    if sys.argv == None:
+    if sys.argv == []:
         basepath = "/"
     else:
-        basepath = sys.argv
+        basepath = sys.argv[1]
 
     generate_pages_recursive(
         content_path,
