@@ -1,4 +1,5 @@
 import os
+import sys
 import shutil
 
 from pathlib import Path
@@ -6,9 +7,10 @@ from copystatic import copy_static
 from gencontent import generate_page, generate_pages_recursive
 
 source_directory = "./static"
-destination_directory = Path("./public")
+destination_directory = Path("./docs")
 template_path = "./template.html"
 content_path = Path("./content")
+
 
 def main():
 
@@ -27,11 +29,18 @@ def main():
     #    os.path.join(content_path, "index.md"),
     #    template_path,
     #    os.path.join(destination_directory, "index.html"),
+    #    basepath,
     #)
+    if sys.argv == None:
+        basepath = "/"
+    else:
+        basepath = sys.argv
+
     generate_pages_recursive(
         content_path,
         template_path,
         destination_directory,
+        basepath
     )
 
 
